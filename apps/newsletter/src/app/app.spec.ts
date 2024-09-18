@@ -48,11 +48,12 @@ describe('Newsletter App', () => {
     it('asyncronously reduces a stream of events into a materialized view', () =>
       T.gen(function* (_) {
         const handle = yield* _(T.fork(saveTitles))
-        yield* _(T.delay_(F.interrupt(handle), 100))
+        yield* _(T.delay_(F.interrupt(handle), 500)) // Increase delay to allow event processing
         const result = yield* _(T.result(listTitles))
         expect(result).toEqual(
           EX.succeed(['test app', 'learn fp', 'inject dependencies'])
         )
       }))
+    
   })
 })

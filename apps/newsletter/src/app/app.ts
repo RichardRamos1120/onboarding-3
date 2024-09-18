@@ -42,6 +42,18 @@ const handleTodoEvent = matchTodoEventM({
 // reducer function from the first project. It must parse the 
 // message to an event, then use the handleTodoEvent function
 // to apply a change to the state of the persistence layer
-export const saveTitles = handleMessages((message) => NotImplemented)
+export const saveTitles = handleMessages((message) =>
+  pipe(
+    parseTodoEvent(message),    // Parse the message to a TodoEvent
+    T.chain(handleTodoEvent),   // Handle the parsed event
+    T.catchAll((error) =>       // Handle any potential errors
+      pipe(
+        logError(`Failed to handle message: ${message} - Error: ${error}`),
+        T.asUnit
+      )
+    )
+  )
+)
+
 
 export const app = T.tuplePar(sendNewsletter, saveTitles)
